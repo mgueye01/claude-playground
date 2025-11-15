@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonic Racer - Course Infinie</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="ui-overlay">
+            <div id="score-board">
+                <div class="stat">
+                    <span class="label">Score:</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Distance:</span>
+                    <span id="distance">0</span>m
+                </div>
+                <div class="stat">
+                    <span class="label">Vitesse:</span>
+                    <span id="speed">0</span> km/h
+                </div>
+            </div>
+            <div id="level-indicator">
+                <span class="label">Niveau:</span>
+                <span id="level">1</span>
+            </div>
+        </div>
+
+        <canvas id="game-canvas"></canvas>
+
+        <div id="game-over-screen" class="hidden">
+            <div class="game-over-content">
+                <h1>GAME OVER</h1>
+                <p class="final-score">Score Final: <span id="final-score">0</span></p>
+                <p class="final-distance">Distance: <span id="final-distance">0</span>m</p>
+                <button id="restart-btn">Recommencer</button>
+            </div>
+        </div>
+
+        <div id="start-screen">
+            <div class="start-content">
+                <h1 class="game-title">🏎️ SONIC RACER</h1>
+                <p class="game-description">Course à toute vitesse contre vos adversaires !</p>
+                <div class="instructions">
+                    <h3>Contrôles:</h3>
+                    <p>⬅️ ➡️ Flèches : Déplacer</p>
+                    <p>⬆️ Flèche Haut : Accélérer</p>
+                    <p>⬇️ Flèche Bas : Ralentir</p>
+                </div>
+                <button id="start-btn">Commencer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
