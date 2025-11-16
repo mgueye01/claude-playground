@@ -42,6 +42,7 @@
 
         <div id="start-screen">
             <div class="start-content">
+                <button id="quests-btn">Quêtes</button>
                 <h1 class="game-title">🏎️ SONIC RACER</h1>
                 <p class="game-description">Course à toute vitesse contre vos adversaires !</p>
 
@@ -88,6 +89,26 @@
                             <span class="car-name">Neon</span>
                             <span class="car-desc">Style futuriste</span>
                         </button>
+                        <button class="car-option" data-car="phantom">
+                            <div class="car-preview" id="preview-phantom"></div>
+                            <span class="car-name">Phantom</span>
+                            <span class="car-desc">🔒 Débloquer</span>
+                        </button>
+                        <button class="car-option" data-car="lightning">
+                            <div class="car-preview" id="preview-lightning"></div>
+                            <span class="car-name">Lightning</span>
+                            <span class="car-desc">🔒 Débloquer</span>
+                        </button>
+                        <button class="car-option" data-car="chrome">
+                            <div class="car-preview" id="preview-chrome"></div>
+                            <span class="car-name">Chrome</span>
+                            <span class="car-desc">🔒 Débloquer</span>
+                        </button>
+                        <button class="car-option" data-car="fire">
+                            <div class="car-preview" id="preview-fire"></div>
+                            <span class="car-name">Fire</span>
+                            <span class="car-desc">🔒 Débloquer</span>
+                        </button>
                     </div>
                 </div>
 
@@ -98,6 +119,29 @@
                     <p>⬇️ Flèche Bas : Ralentir</p>
                 </div>
                 <button id="start-btn">Commencer</button>
+            </div>
+        </div>
+
+        <!-- Quests Screen -->
+        <div id="quests-screen" class="hidden">
+            <div class="quests-content">
+                <div class="quests-header">
+                    <h1>Quêtes & Récompenses</h1>
+                    <p>Complétez les quêtes pour débloquer des objets exclusifs !</p>
+                </div>
+
+                <div id="quests-list" class="quests-grid">
+                    <!-- Quests will be dynamically inserted here -->
+                </div>
+
+                <div class="unlocked-items-section">
+                    <h2>Collection</h2>
+                    <div id="unlocked-items" class="unlocked-items-grid">
+                        <!-- Unlocked items will be shown here -->
+                    </div>
+                </div>
+
+                <button id="close-quests-btn">Retour au Menu</button>
             </div>
         </div>
     </div>

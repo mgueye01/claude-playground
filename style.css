@@ -190,6 +190,39 @@ button:active {
     transform: translateY(-1px);
 }
 
+/* Start Button - Extra Visible */
+#start-btn {
+    font-size: 32px;
+    padding: 20px 70px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+    box-shadow: 0 15px 50px rgba(0, 255, 136, 0.6);
+    animation: pulse 2s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+#start-btn::before {
+    content: '▶';
+    margin-right: 10px;
+    font-size: 28px;
+}
+
+#start-btn:hover {
+    background: linear-gradient(135deg, #00ffaa 0%, #00dd77 100%);
+    box-shadow: 0 20px 60px rgba(0, 255, 136, 0.8);
+    transform: translateY(-5px) scale(1.05);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 15px 50px rgba(0, 255, 136, 0.6);
+    }
+    50% {
+        box-shadow: 0 15px 50px rgba(0, 255, 136, 1), 0 0 30px rgba(0, 255, 136, 0.5);
+    }
+}
+
 /* Game Over Screen */
 #game-over-screen {
     position: absolute;
@@ -366,6 +399,241 @@ button:active {
     font-style: italic;
 }
 
+/* Quests Screen */
+#quests-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.quests-content {
+    max-width: 900px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.quests-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.quests-header h1 {
+    font-size: 48px;
+    color: #00ff88;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    margin-bottom: 10px;
+}
+
+.quests-header p {
+    color: #aaa;
+    font-size: 18px;
+}
+
+.quests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.quest-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.quest-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 255, 136, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+}
+
+.quest-card.completed {
+    border-color: rgba(0, 255, 136, 0.8);
+    background: rgba(0, 255, 136, 0.1);
+}
+
+.quest-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.quest-description {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 15px;
+}
+
+.quest-progress {
+    margin-bottom: 10px;
+}
+
+.quest-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.quest-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff88 0%, #00cc66 100%);
+    transition: width 0.5s ease;
+}
+
+.quest-reward {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.quest-reward-icon {
+    font-size: 24px;
+}
+
+.quest-reward-text {
+    font-size: 14px;
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.quest-status {
+    font-size: 12px;
+    color: #00ff88;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.unlocked-items-section {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.unlocked-items-section h2 {
+    color: #00ff88;
+    font-size: 32px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.unlocked-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.unlocked-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    text-align: center;
+}
+
+.unlocked-item-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.unlocked-item-name {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.locked-item {
+    opacity: 0.3;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.locked-item .unlocked-item-name {
+    color: #666;
+}
+
+#close-quests-btn {
+    margin-top: 30px;
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Quest notification */
+.quest-notification {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: rgba(0, 255, 136, 0.9);
+    color: #000;
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 255, 136, 0.6);
+    font-weight: bold;
+    font-size: 18px;
+    z-index: 1000;
+    animation: slideIn 0.5s ease, slideOut 0.5s ease 2.5s;
+    pointer-events: none;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+/* Quests button in menu */
+#quests-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+    padding: 15px 30px;
+    font-size: 18px;
+}
+
+#quests-btn::before {
+    content: '🏆';
+    margin-right: 8px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .game-title {
@@ -385,5 +653,18 @@ button:active {
     button {
         font-size: 18px;
         padding: 12px 35px;
+    }
+
+    .quests-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quests-content {
+        padding: 20px;
+    }
+
+    #start-btn {
+        font-size: 24px;
+        padding: 15px 50px;
     }
 }

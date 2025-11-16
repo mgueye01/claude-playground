@@ -46,22 +46,139 @@ const CAR_MODELS = {
         name: 'Speedster',
         colors: ['#00D9FF', '#0099CC'],
         accentColor: '#00FFFF',
+        unlocked: true,
     },
     muscle: {
         name: 'Muscle',
         colors: ['#FF4444', '#CC0000'],
         accentColor: '#FF0000',
+        unlocked: true,
     },
     racer: {
         name: 'Racer Pro',
         colors: ['#FFD700', '#FFA500'],
         accentColor: '#FFFF00',
+        unlocked: true,
     },
     neon: {
         name: 'Neon',
         colors: ['#FF00FF', '#8800FF'],
         accentColor: '#FF00FF',
+        unlocked: true,
+    },
+    phantom: {
+        name: 'Phantom',
+        colors: ['#000000', '#333333'],
+        accentColor: '#8800FF',
+        unlocked: false,
+    },
+    lightning: {
+        name: 'Lightning',
+        colors: ['#FFFF00', '#FFD700'],
+        accentColor: '#FFF000',
+        unlocked: false,
+    },
+    chrome: {
+        name: 'Chrome',
+        colors: ['#C0C0C0', '#E8E8E8'],
+        accentColor: '#FFFFFF',
+        unlocked: false,
+    },
+    fire: {
+        name: 'Fire',
+        colors: ['#FF4500', '#FF0000'],
+        accentColor: '#FF6600',
+        unlocked: false,
     }
+};
+
+// Quests System
+const QUESTS = [
+    {
+        id: 'first_race',
+        title: 'Première Course',
+        description: 'Terminez votre première course',
+        target: 1,
+        reward: { type: 'item', id: 'trophy_bronze', name: 'Trophée Bronze', icon: '🥉' },
+        check: (stats) => stats.gamesPlayed >= 1,
+        progress: (stats) => Math.min(stats.gamesPlayed, 1),
+    },
+    {
+        id: 'speed_demon',
+        title: 'Démon de Vitesse',
+        description: 'Atteignez 200 km/h',
+        target: 200,
+        reward: { type: 'car', id: 'lightning', name: 'Lightning', icon: '⚡' },
+        check: (stats) => stats.maxSpeed >= 200,
+        progress: (stats) => Math.min(stats.maxSpeed, 200),
+    },
+    {
+        id: 'distance_master',
+        title: 'Maître des Distances',
+        description: 'Parcourez 5000m en une partie',
+        target: 5000,
+        reward: { type: 'car', id: 'phantom', name: 'Phantom', icon: '👻' },
+        check: (stats) => stats.maxDistance >= 5000,
+        progress: (stats) => Math.min(stats.maxDistance, 5000),
+    },
+    {
+        id: 'score_hunter',
+        title: 'Chasseur de Points',
+        description: 'Obtenez 10000 points',
+        target: 10000,
+        reward: { type: 'item', id: 'trophy_silver', name: 'Trophée Argent', icon: '🥈' },
+        check: (stats) => stats.maxScore >= 10000,
+        progress: (stats) => Math.min(stats.maxScore, 10000),
+    },
+    {
+        id: 'level_up',
+        title: 'Montée de Niveau',
+        description: 'Atteignez le niveau 5',
+        target: 5,
+        reward: { type: 'car', id: 'chrome', name: 'Chrome', icon: '💎' },
+        check: (stats) => stats.maxLevel >= 5,
+        progress: (stats) => Math.min(stats.maxLevel, 5),
+    },
+    {
+        id: 'veteran',
+        title: 'Vétéran',
+        description: 'Jouez 20 parties',
+        target: 20,
+        reward: { type: 'car', id: 'fire', name: 'Fire', icon: '🔥' },
+        check: (stats) => stats.gamesPlayed >= 20,
+        progress: (stats) => Math.min(stats.gamesPlayed, 20),
+    },
+    {
+        id: 'total_distance',
+        title: 'Globe-Trotter',
+        description: 'Parcourez 50000m au total',
+        target: 50000,
+        reward: { type: 'item', id: 'trophy_gold', name: 'Trophée Or', icon: '🏆' },
+        check: (stats) => stats.totalDistance >= 50000,
+        progress: (stats) => Math.min(stats.totalDistance, 50000),
+    },
+    {
+        id: 'hard_mode',
+        title: 'Expert',
+        description: 'Terminez une course en mode Difficile',
+        target: 1,
+        reward: { type: 'item', id: 'medal', name: 'Médaille Expert', icon: '🎖️' },
+        check: (stats) => stats.hardModeCompleted >= 1,
+        progress: (stats) => Math.min(stats.hardModeCompleted, 1),
+    },
+];
+
+// Player Stats (persistent)
+let playerStats = {
+    gamesPlayed: 0,
+    maxScore: 0,
+    maxDistance: 0,
+    maxSpeed: 0,
+    maxLevel: 0,
+    totalDistance: 0,
+    hardModeCompleted: 0,
+    completedQuests: [],
+    unlockedItems: [],
 };
 
 // Game State
@@ -485,10 +602,16 @@ function gameOver() {
     gameState.isPlaying = false;
     cancelAnimationFrame(gameState.animationId);
 
+    // Update player stats
+    updatePlayerStats();
+
     // Show game over screen
     document.getElementById('final-score').textContent = Math.floor(gameState.score);
     document.getElementById('final-distance').textContent = Math.floor(gameState.distance);
     document.getElementById('game-over-screen').classList.remove('hidden');
+
+    // Check quests
+    checkQuests();
 }
 
 // Draw Car Previews in Menu
@@ -511,6 +634,166 @@ function drawCarPreviews() {
     });
 }
 
+// === QUESTS SYSTEM ===
+
+// Load player stats from localStorage
+function loadPlayerStats() {
+    const saved = localStorage.getItem('sonicRacerStats');
+    if (saved) {
+        playerStats = JSON.parse(saved);
+        // Unlock cars based on saved data
+        playerStats.completedQuests.forEach(questId => {
+            const quest = QUESTS.find(q => q.id === questId);
+            if (quest && quest.reward.type === 'car') {
+                CAR_MODELS[quest.reward.id].unlocked = true;
+            }
+        });
+    }
+}
+
+// Save player stats to localStorage
+function savePlayerStats() {
+    localStorage.setItem('sonicRacerStats', JSON.stringify(playerStats));
+}
+
+// Update stats after game over
+function updatePlayerStats() {
+    playerStats.gamesPlayed++;
+    playerStats.maxScore = Math.max(playerStats.maxScore, Math.floor(gameState.score));
+    playerStats.maxDistance = Math.max(playerStats.maxDistance, Math.floor(gameState.distance));
+    playerStats.maxSpeed = Math.max(playerStats.maxSpeed, Math.floor(gameState.speed * 10));
+    playerStats.maxLevel = Math.max(playerStats.maxLevel, gameState.level);
+    playerStats.totalDistance += Math.floor(gameState.distance);
+
+    if (gameSettings.selectedDifficulty === 'hard' && gameState.distance > 1000) {
+        playerStats.hardModeCompleted++;
+    }
+
+    savePlayerStats();
+}
+
+// Check and complete quests
+function checkQuests() {
+    QUESTS.forEach(quest => {
+        if (!playerStats.completedQuests.includes(quest.id) && quest.check(playerStats)) {
+            // Quest completed!
+            playerStats.completedQuests.push(quest.id);
+            playerStats.unlockedItems.push(quest.reward.id);
+
+            // Unlock reward
+            if (quest.reward.type === 'car') {
+                CAR_MODELS[quest.reward.id].unlocked = true;
+            }
+
+            savePlayerStats();
+            showQuestNotification(quest);
+        }
+    });
+}
+
+// Show quest completion notification
+function showQuestNotification(quest) {
+    const notification = document.createElement('div');
+    notification.className = 'quest-notification';
+    notification.innerHTML = `
+        ${quest.reward.icon} Quête Terminée!<br>
+        <strong>${quest.title}</strong><br>
+        Débloqué: ${quest.reward.name}
+    `;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Render quests screen
+function renderQuests() {
+    const questsList = document.getElementById('quests-list');
+    questsList.innerHTML = '';
+
+    QUESTS.forEach(quest => {
+        const isCompleted = playerStats.completedQuests.includes(quest.id);
+        const progress = quest.progress(playerStats);
+        const progressPercent = Math.min((progress / quest.target) * 100, 100);
+
+        const questCard = document.createElement('div');
+        questCard.className = `quest-card ${isCompleted ? 'completed' : ''}`;
+        questCard.innerHTML = `
+            <div class="quest-title">${quest.title}</div>
+            <div class="quest-description">${quest.description}</div>
+            <div class="quest-progress">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="color: #aaa; font-size: 12px;">Progression</span>
+                    <span style="color: #fff; font-size: 12px;">${Math.floor(progress)}/${quest.target}</span>
+                </div>
+                <div class="quest-progress-bar">
+                    <div class="quest-progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+            </div>
+            <div class="quest-reward">
+                <span class="quest-reward-icon">${quest.reward.icon}</span>
+                <span class="quest-reward-text">${quest.reward.name}</span>
+            </div>
+            ${isCompleted ? '<div class="quest-status">✓ Complétée</div>' : ''}
+        `;
+        questsList.appendChild(questCard);
+    });
+}
+
+// Render unlocked items
+function renderUnlockedItems() {
+    const itemsGrid = document.getElementById('unlocked-items');
+    itemsGrid.innerHTML = '';
+
+    // Show all cars
+    Object.keys(CAR_MODELS).forEach(carId => {
+        const car = CAR_MODELS[carId];
+        const isUnlocked = car.unlocked;
+
+        const itemCard = document.createElement('div');
+        itemCard.className = `unlocked-item ${!isUnlocked ? 'locked-item' : ''}`;
+        itemCard.innerHTML = `
+            <div class="unlocked-item-icon">${isUnlocked ? '🏎️' : '🔒'}</div>
+            <div class="unlocked-item-name">${car.name}</div>
+        `;
+        itemsGrid.appendChild(itemCard);
+    });
+
+    // Show trophies/items
+    const items = [
+        { id: 'trophy_bronze', name: 'Trophée Bronze', icon: '🥉' },
+        { id: 'trophy_silver', name: 'Trophée Argent', icon: '🥈' },
+        { id: 'trophy_gold', name: 'Trophée Or', icon: '🏆' },
+        { id: 'medal', name: 'Médaille Expert', icon: '🎖️' },
+    ];
+
+    items.forEach(item => {
+        const isUnlocked = playerStats.unlockedItems.includes(item.id);
+        const itemCard = document.createElement('div');
+        itemCard.className = `unlocked-item ${!isUnlocked ? 'locked-item' : ''}`;
+        itemCard.innerHTML = `
+            <div class="unlocked-item-icon">${isUnlocked ? item.icon : '🔒'}</div>
+            <div class="unlocked-item-name">${item.name}</div>
+        `;
+        itemsGrid.appendChild(itemCard);
+    });
+}
+
+// Show quests screen
+function showQuestsScreen() {
+    renderQuests();
+    renderUnlockedItems();
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('quests-screen').classList.remove('hidden');
+}
+
+// Hide quests screen
+function hideQuestsScreen() {
+    document.getElementById('quests-screen').classList.add('hidden');
+    document.getElementById('start-screen').classList.remove('hidden');
+}
+
 // Menu Selection Handlers
 function setupMenuHandlers() {
     // Difficulty selection
@@ -522,13 +805,32 @@ function setupMenuHandlers() {
         });
     });
 
-    // Car selection
+    // Car selection - only allow unlocked cars
     document.querySelectorAll('.car-option').forEach(btn => {
         btn.addEventListener('click', () => {
+            const carId = btn.dataset.car;
+            if (!CAR_MODELS[carId].unlocked) {
+                showQuestNotification({
+                    title: 'Voiture Verrouillée',
+                    reward: { icon: '🔒', name: 'Complétez des quêtes pour débloquer' }
+                });
+                return;
+            }
             document.querySelectorAll('.car-option').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            gameSettings.selectedCar = btn.dataset.car;
+            gameSettings.selectedCar = carId;
         });
+    });
+}
+
+// Update car selection UI
+function updateCarSelectionUI() {
+    document.querySelectorAll('.car-option').forEach(btn => {
+        const carId = btn.dataset.car;
+        if (!CAR_MODELS[carId].unlocked) {
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+        }
     });
 }
 
@@ -538,6 +840,9 @@ document.getElementById('restart-btn').addEventListener('click', () => {
     document.getElementById('game-over-screen').classList.add('hidden');
     document.getElementById('start-screen').classList.remove('hidden');
 });
+
+document.getElementById('quests-btn').addEventListener('click', showQuestsScreen);
+document.getElementById('close-quests-btn').addEventListener('click', hideQuestsScreen);
 
 window.addEventListener('keydown', (e) => {
     gameState.keys[e.key] = true;
@@ -555,6 +860,8 @@ window.addEventListener('keyup', (e) => {
 });
 
 // Initialize
+loadPlayerStats();
 drawCarPreviews();
 setupMenuHandlers();
+updateCarSelectionUI();
 updateUI();
