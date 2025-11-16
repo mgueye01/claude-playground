@@ -44,6 +44,53 @@
             <div class="start-content">
                 <h1 class="game-title">🏎️ SONIC RACER</h1>
                 <p class="game-description">Course à toute vitesse contre vos adversaires !</p>
+
+                <!-- Sélection de difficulté -->
+                <div class="menu-section">
+                    <h3>Niveau de Difficulté</h3>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn active" data-difficulty="easy">
+                            <span class="diff-emoji">😊</span>
+                            <span class="diff-name">Facile</span>
+                        </button>
+                        <button class="difficulty-btn" data-difficulty="medium">
+                            <span class="diff-emoji">😐</span>
+                            <span class="diff-name">Moyen</span>
+                        </button>
+                        <button class="difficulty-btn" data-difficulty="hard">
+                            <span class="diff-emoji">😤</span>
+                            <span class="diff-name">Difficile</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sélection de voiture -->
+                <div class="menu-section">
+                    <h3>Choisissez votre Voiture</h3>
+                    <div class="car-selection">
+                        <button class="car-option active" data-car="speedster">
+                            <div class="car-preview" id="preview-speedster"></div>
+                            <span class="car-name">Speedster</span>
+                            <span class="car-desc">Rapide et agile</span>
+                        </button>
+                        <button class="car-option" data-car="muscle">
+                            <div class="car-preview" id="preview-muscle"></div>
+                            <span class="car-name">Muscle</span>
+                            <span class="car-desc">Puissante</span>
+                        </button>
+                        <button class="car-option" data-car="racer">
+                            <div class="car-preview" id="preview-racer"></div>
+                            <span class="car-name">Racer Pro</span>
+                            <span class="car-desc">Équilibrée</span>
+                        </button>
+                        <button class="car-option" data-car="neon">
+                            <div class="car-preview" id="preview-neon"></div>
+                            <span class="car-name">Neon</span>
+                            <span class="car-desc">Style futuriste</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="instructions">
                     <h3>Contrôles:</h3>
                     <p>⬅️ ➡️ Flèches : Déplacer</p>

@@ -247,6 +247,125 @@ button:active {
     display: none !important;
 }
 
+/* Menu Sections */
+.menu-section {
+    margin: 25px 0;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-section h3 {
+    color: #fff;
+    font-size: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Difficulty Selection */
+.difficulty-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.difficulty-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 25px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    min-width: 100px;
+}
+
+.difficulty-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.difficulty-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+}
+
+.diff-emoji {
+    font-size: 32px;
+}
+
+.diff-name {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Car Selection */
+.car-selection {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.car-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.car-option:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.car-option.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+}
+
+.car-preview {
+    width: 80px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    position: relative;
+}
+
+.car-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.car-desc {
+    font-size: 12px;
+    color: #ccc;
+    font-style: italic;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .game-title {

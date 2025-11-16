@@ -7,20 +7,75 @@ const CONFIG = {
     playerCarHeight: 70,
     enemyCarWidth: 40,
     enemyCarHeight: 70,
-    initialSpeed: 5,
-    maxSpeed: 20,
-    acceleration: 0.3,
-    deceleration: 0.2,
-    friction: 0.1,
+};
+
+// Difficulty Settings
+const DIFFICULTY = {
+    easy: {
+        initialSpeed: 3,
+        maxSpeed: 12,
+        acceleration: 0.2,
+        deceleration: 0.15,
+        friction: 0.08,
+        enemySpawnRate: 0.015,
+        enemySpeedBonus: 0.3,
+    },
+    medium: {
+        initialSpeed: 5,
+        maxSpeed: 18,
+        acceleration: 0.3,
+        deceleration: 0.2,
+        friction: 0.1,
+        enemySpawnRate: 0.02,
+        enemySpeedBonus: 0.5,
+    },
+    hard: {
+        initialSpeed: 7,
+        maxSpeed: 25,
+        acceleration: 0.4,
+        deceleration: 0.25,
+        friction: 0.12,
+        enemySpawnRate: 0.025,
+        enemySpeedBonus: 0.8,
+    }
+};
+
+// Car Models
+const CAR_MODELS = {
+    speedster: {
+        name: 'Speedster',
+        colors: ['#00D9FF', '#0099CC'],
+        accentColor: '#00FFFF',
+    },
+    muscle: {
+        name: 'Muscle',
+        colors: ['#FF4444', '#CC0000'],
+        accentColor: '#FF0000',
+    },
+    racer: {
+        name: 'Racer Pro',
+        colors: ['#FFD700', '#FFA500'],
+        accentColor: '#FFFF00',
+    },
+    neon: {
+        name: 'Neon',
+        colors: ['#FF00FF', '#8800FF'],
+        accentColor: '#FF00FF',
+    }
 };
 
 // Game State
+let gameSettings = {
+    selectedCar: 'speedster',
+    selectedDifficulty: 'easy',
+};
+
 let gameState = {
     isPlaying: false,
     isPaused: false,
     score: 0,
     distance: 0,
-    speed: CONFIG.initialSpeed,
+    speed: 3,
     level: 1,
     roadOffset: 0,
     player: null,
@@ -41,9 +96,51 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
+// Draw Car Function (reusable for player, enemies, and previews)
+function drawCar(ctx, x, y, width, height, carModel, isPreview = false) {
+    const model = CAR_MODELS[carModel] || CAR_MODELS.speedster;
+
+    // Car body - gradient
+    const gradient = ctx.createLinearGradient(x, y, x + width, y + height);
+    gradient.addColorStop(0, model.colors[0]);
+    gradient.addColorStop(1, model.colors[1]);
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, width, height);
+
+    // Car outline
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = isPreview ? 1 : 2;
+    ctx.strokeRect(x, y, width, height);
+
+    // Windshield
+    ctx.fillStyle = 'rgba(100, 200, 255, 0.5)';
+    ctx.fillRect(x + width * 0.125, y + height * 0.14, width * 0.75, height * 0.28);
+
+    // Wheels
+    ctx.fillStyle = '#222';
+    const wheelWidth = width * 0.15;
+    const wheelHeight = height * 0.21;
+    ctx.fillRect(x - wheelWidth * 0.5, y + height * 0.14, wheelWidth, wheelHeight);
+    ctx.fillRect(x + width - wheelWidth * 0.5, y + height * 0.14, wheelWidth, wheelHeight);
+    ctx.fillRect(x - wheelWidth * 0.5, y + height * 0.64, wheelWidth, wheelHeight);
+    ctx.fillRect(x + width - wheelWidth * 0.5, y + height * 0.64, wheelWidth, wheelHeight);
+
+    // Headlights
+    ctx.fillStyle = model.accentColor;
+    ctx.fillRect(x + width * 0.2, y + height * 0.93, width * 0.2, height * 0.07);
+    ctx.fillRect(x + width * 0.6, y + height * 0.93, width * 0.2, height * 0.07);
+
+    // Accent stripe
+    ctx.fillStyle = model.accentColor;
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(x + width * 0.3, y + height * 0.4, width * 0.4, height * 0.2);
+    ctx.globalAlpha = 1.0;
+}
+
 // Player Car Class
 class PlayerCar {
-    constructor() {
+    constructor(carModel) {
         this.width = CONFIG.playerCarWidth;
         this.height = CONFIG.playerCarHeight;
         this.x = canvas.width / 2 - this.width / 2;
@@ -51,9 +148,11 @@ class PlayerCar {
         this.lane = 1;
         this.targetX = this.x;
         this.velocityX = 0;
+        this.carModel = carModel;
     }
 
     update() {
+        const difficulty = DIFFICULTY[gameSettings.selectedDifficulty];
         const laneWidth = CONFIG.roadWidth / CONFIG.numLanes;
         const roadLeft = (canvas.width - CONFIG.roadWidth) / 2;
 
@@ -77,52 +176,28 @@ class PlayerCar {
 
         // Handle acceleration/deceleration
         if (gameState.keys['ArrowUp']) {
-            gameState.speed = Math.min(gameState.speed + CONFIG.acceleration, CONFIG.maxSpeed + (gameState.level * 2));
+            gameState.speed = Math.min(
+                gameState.speed + difficulty.acceleration,
+                difficulty.maxSpeed + (gameState.level * 1.5)
+            );
         } else if (gameState.keys['ArrowDown']) {
-            gameState.speed = Math.max(gameState.speed - CONFIG.deceleration, 2);
+            gameState.speed = Math.max(gameState.speed - difficulty.deceleration, 1);
         } else {
             // Natural friction
-            if (gameState.speed > CONFIG.initialSpeed + gameState.level) {
-                gameState.speed -= CONFIG.friction;
-            } else if (gameState.speed < CONFIG.initialSpeed + gameState.level) {
-                gameState.speed += CONFIG.friction;
+            if (gameState.speed > difficulty.initialSpeed + gameState.level * 0.5) {
+                gameState.speed -= difficulty.friction;
+            } else if (gameState.speed < difficulty.initialSpeed + gameState.level * 0.5) {
+                gameState.speed += difficulty.friction * 0.5;
             }
         }
     }
 
     draw() {
-        // Car body - gradient based on speed
-        const speedRatio = gameState.speed / CONFIG.maxSpeed;
-        const gradient = ctx.createLinearGradient(this.x, this.y, this.x + this.width, this.y + this.height);
-        gradient.addColorStop(0, `hsl(${200 + speedRatio * 60}, 100%, ${50 + speedRatio * 20}%)`);
-        gradient.addColorStop(1, `hsl(${180 + speedRatio * 40}, 100%, ${40 + speedRatio * 10}%)`);
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-
-        // Car outline
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(this.x, this.y, this.width, this.height);
-
-        // Windshield
-        ctx.fillStyle = 'rgba(100, 200, 255, 0.5)';
-        ctx.fillRect(this.x + 5, this.y + 10, this.width - 10, 20);
-
-        // Wheels
-        ctx.fillStyle = '#222';
-        ctx.fillRect(this.x - 3, this.y + 10, 6, 15);
-        ctx.fillRect(this.x + this.width - 3, this.y + 10, 6, 15);
-        ctx.fillRect(this.x - 3, this.y + this.height - 25, 6, 15);
-        ctx.fillRect(this.x + this.width - 3, this.y + this.height - 25, 6, 15);
-
-        // Headlights
-        ctx.fillStyle = '#ffff00';
-        ctx.fillRect(this.x + 8, this.y + this.height - 5, 8, 5);
-        ctx.fillRect(this.x + this.width - 16, this.y + this.height - 5, 8, 5);
+        drawCar(ctx, this.x, this.y, this.width, this.height, this.carModel);
 
         // Speed lines (when going fast)
-        if (gameState.speed > CONFIG.maxSpeed * 0.7) {
+        const difficulty = DIFFICULTY[gameSettings.selectedDifficulty];
+        if (gameState.speed > difficulty.maxSpeed * 0.7) {
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
             ctx.lineWidth = 2;
             for (let i = 0; i < 3; i++) {
@@ -154,7 +229,9 @@ class EnemyCar {
         const roadLeft = (canvas.width - CONFIG.roadWidth) / 2;
         this.x = roadLeft + (lane * laneWidth) + (laneWidth / 2) - (this.width / 2);
         this.y = -this.height;
-        this.speed = speed || (Math.random() * 3 + 2 + gameState.level * 0.5);
+
+        const difficulty = DIFFICULTY[gameSettings.selectedDifficulty];
+        this.speed = speed || (Math.random() * 2 + 1.5 + gameState.level * difficulty.enemySpeedBonus);
         this.color = this.getRandomColor();
     }
 
@@ -305,6 +382,8 @@ function spawnEnemy() {
 function update() {
     if (!gameState.isPlaying || gameState.isPaused) return;
 
+    const difficulty = DIFFICULTY[gameSettings.selectedDifficulty];
+
     // Update player
     gameState.player.update();
 
@@ -329,7 +408,7 @@ function update() {
     });
 
     // Spawn new enemies
-    if (Math.random() < 0.02 + gameState.level * 0.005) {
+    if (Math.random() < difficulty.enemySpawnRate + gameState.level * 0.003) {
         spawnEnemy();
     }
 
@@ -376,16 +455,18 @@ function gameLoop() {
 
 // Start Game
 function startGame() {
+    const difficulty = DIFFICULTY[gameSettings.selectedDifficulty];
+
     // Reset game state
     gameState = {
         isPlaying: true,
         isPaused: false,
         score: 0,
         distance: 0,
-        speed: CONFIG.initialSpeed,
+        speed: difficulty.initialSpeed,
         level: 1,
         roadOffset: 0,
-        player: new PlayerCar(),
+        player: new PlayerCar(gameSettings.selectedCar),
         enemies: [],
         keys: {},
         animationId: null,
@@ -410,9 +491,53 @@ function gameOver() {
     document.getElementById('game-over-screen').classList.remove('hidden');
 }
 
+// Draw Car Previews in Menu
+function drawCarPreviews() {
+    Object.keys(CAR_MODELS).forEach(modelKey => {
+        const previewElement = document.getElementById(`preview-${modelKey}`);
+        if (!previewElement) return;
+
+        const previewCanvas = document.createElement('canvas');
+        previewCanvas.width = 80;
+        previewCanvas.height = 100;
+        const previewCtx = previewCanvas.getContext('2d');
+
+        // Draw car in preview
+        drawCar(previewCtx, 20, 15, 40, 70, modelKey, true);
+
+        // Replace the div with the canvas
+        previewElement.innerHTML = '';
+        previewElement.appendChild(previewCanvas);
+    });
+}
+
+// Menu Selection Handlers
+function setupMenuHandlers() {
+    // Difficulty selection
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            gameSettings.selectedDifficulty = btn.dataset.difficulty;
+        });
+    });
+
+    // Car selection
+    document.querySelectorAll('.car-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.car-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            gameSettings.selectedCar = btn.dataset.car;
+        });
+    });
+}
+
 // Event Listeners
 document.getElementById('start-btn').addEventListener('click', startGame);
-document.getElementById('restart-btn').addEventListener('click', startGame);
+document.getElementById('restart-btn').addEventListener('click', () => {
+    document.getElementById('game-over-screen').classList.add('hidden');
+    document.getElementById('start-screen').classList.remove('hidden');
+});
 
 window.addEventListener('keydown', (e) => {
     gameState.keys[e.key] = true;
@@ -429,5 +554,7 @@ window.addEventListener('keyup', (e) => {
     }
 });
 
-// Initial UI update
+// Initialize
+drawCarPreviews();
+setupMenuHandlers();
 updateUI();
