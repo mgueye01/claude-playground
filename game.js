@@ -621,12 +621,12 @@ function drawCarPreviews() {
         if (!previewElement) return;
 
         const previewCanvas = document.createElement('canvas');
-        previewCanvas.width = 80;
-        previewCanvas.height = 100;
+        previewCanvas.width = 60;
+        previewCanvas.height = 80;
         const previewCtx = previewCanvas.getContext('2d');
 
         // Draw car in preview
-        drawCar(previewCtx, 20, 15, 40, 70, modelKey, true);
+        drawCar(previewCtx, 10, 10, 40, 60, modelKey, true);
 
         // Replace the div with the canvas
         previewElement.innerHTML = '';

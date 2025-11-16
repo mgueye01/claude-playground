@@ -105,17 +105,22 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 100;
+    overflow-y: auto;
+    padding: 20px;
 }
 
 .start-content {
     text-align: center;
     background: rgba(0, 0, 0, 0.8);
-    padding: 50px 60px;
+    padding: 30px 40px;
     border-radius: 20px;
     backdrop-filter: blur(10px);
     border: 3px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     animation: fadeIn 0.5s ease;
+    max-width: 800px;
+    width: 100%;
+    margin: auto;
 }
 
 @keyframes fadeIn {
@@ -130,39 +135,39 @@ body {
 }
 
 .game-title {
-    font-size: 64px;
+    font-size: 48px;
     font-weight: bold;
     color: #fff;
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
                  0 0 40px rgba(102, 126, 234, 0.8);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     letter-spacing: 3px;
 }
 
 .game-description {
-    font-size: 20px;
+    font-size: 18px;
     color: #ddd;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .instructions {
     background: rgba(255, 255, 255, 0.1);
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     text-align: left;
 }
 
 .instructions h3 {
     color: #fff;
-    margin-bottom: 15px;
-    font-size: 18px;
+    margin-bottom: 10px;
+    font-size: 16px;
 }
 
 .instructions p {
     color: #ddd;
-    margin: 8px 0;
-    font-size: 16px;
+    margin: 5px 0;
+    font-size: 14px;
 }
 
 button {
@@ -192,9 +197,9 @@ button:active {
 
 /* Start Button - Extra Visible */
 #start-btn {
-    font-size: 32px;
-    padding: 20px 70px;
-    margin-top: 20px;
+    font-size: 28px;
+    padding: 18px 60px;
+    margin-top: 15px;
     background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
     box-shadow: 0 15px 50px rgba(0, 255, 136, 0.6);
     animation: pulse 2s ease-in-out infinite;
@@ -282,17 +287,17 @@ button:active {
 
 /* Menu Sections */
 .menu-section {
-    margin: 25px 0;
+    margin: 15px 0;
     background: rgba(255, 255, 255, 0.05);
-    padding: 20px;
+    padding: 15px;
     border-radius: 15px;
     border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .menu-section h3 {
     color: #fff;
-    font-size: 20px;
-    margin-bottom: 15px;
+    font-size: 18px;
+    margin-bottom: 12px;
     text-align: center;
 }
 
@@ -344,22 +349,22 @@ button:active {
 /* Car Selection */
 .car-selection {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
 }
 
 .car-option {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 15px;
+    gap: 5px;
+    padding: 10px;
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .car-option:hover {
@@ -375,26 +380,26 @@ button:active {
 }
 
 .car-preview {
-    width: 80px;
-    height: 100px;
+    width: 60px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+    border-radius: 8px;
     position: relative;
 }
 
 .car-name {
-    font-size: 16px;
+    font-size: 13px;
     font-weight: bold;
     color: #fff;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .car-desc {
-    font-size: 12px;
+    font-size: 10px;
     color: #ccc;
     font-style: italic;
 }
@@ -637,11 +642,11 @@ button:active {
 /* Responsive */
 @media (max-width: 768px) {
     .game-title {
-        font-size: 48px;
+        font-size: 36px;
     }
 
     .start-content {
-        padding: 30px 40px;
+        padding: 20px 25px;
     }
 
     #score-board {
@@ -651,8 +656,8 @@ button:active {
     }
 
     button {
-        font-size: 18px;
-        padding: 12px 35px;
+        font-size: 16px;
+        padding: 10px 30px;
     }
 
     .quests-grid {
@@ -664,7 +669,15 @@ button:active {
     }
 
     #start-btn {
-        font-size: 24px;
-        padding: 15px 50px;
+        font-size: 22px;
+        padding: 15px 45px;
+    }
+
+    .car-selection {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .difficulty-buttons {
+        flex-direction: column;
     }
 }
